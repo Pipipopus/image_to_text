@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Распознавание текста</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .upload-area:hover {
+            border-color: #aaa;
+        }
+        #file-input {
+            display: none;
+        }
+        #result {
+            width: 100%;
+            min-height: 300px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OCR Распознавание текста</h1>
+
+        <div class="upload-area" id="upload-area">
+            <p>Перетащите сюда изображение или кликните для выбора файла</p>
+            <input type="file" id="file-input" accept=".png,.jpg,.jpeg,.bmp">
+        </div>
+
+        <button id="recognize-btn" disabled>Распознать текст</button>
+
+        <div class="loading" id="loading">
+            <p>Идет распознавание...</p>
+        </div>
+
+        <h2>Результат:</h2>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const uploadArea = document.getElementById('upload-area');
+        const recognizeBtn = document.getElementById('recognize-btn');
+        const resultDiv = document.getElementById('result');
+        const loadingDiv = document.getElementById('loading');
+
+        let selectedFile = null;
+
+        // Обработка клика по области загрузки
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Обработка выбора файла
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                selectedFile = e.target.files[0];
+                uploadArea.innerHTML = `<p>Выбран файл: ${selectedFile.name}</p>`;
+                recognizeBtn.disabled = false;
+            }
+        });
+
+        // Обработка перетаскивания файла
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#4CAF50';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#ccc';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ccc';
+
+            if (e.dataTransfer.files.length > 0) {
+                selectedFile = e.dataTransfer.files[0];
+                fileInput.files = e.dataTransfer.files;
+                uploadArea.innerHTML = `<p>Выбран файл: ${selectedFile.name}</p>`;
+                recognizeBtn.disabled = false;
+            }
+        });
+
+        // Обработка кнопки распознавания
+        recognizeBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            loadingDiv.style.display = 'block';
+            resultDiv.textContent = '';
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    resultDiv.innerHTML = `<p class="error">Ошибка: ${data.error}</p>`;
+                } else {
+                    resultDiv.textContent = data.text || 'Текст не распознан';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">Ошибка: ${error.message}</p>`;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
