@@ -56,33 +56,8 @@ python
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'  # для Windows
 
 Запуск
-bash
 
 python server.py
 
 Приложение будет доступно по адресу: http://localhost:5000
-Использование
 
-    Перетащите изображение в выделенную область или кликните для выбора файла
-
-    Нажмите "Распознать текст"
-
-    Получите результат в текстовом поле
-
-    Скопируйте текст при необходимости
-
-Структура проекта
-text
-
-ocr-webapp/
-├── templates/          # HTML шаблоны
-│   └── index.html      # Главная страница
-├── static/             # Статические файлы (CSS/JS)
-├── uploads/            # Временные файлы (автоматически создаётся)
-├── server.py           # Основное приложение Flask
-├── requirements.txt    # Зависимости Python
-└── README.md           # Этот файл
-
-Лицензия
-
-MIT License. Смотрите файл LICENSE для подробностей.
