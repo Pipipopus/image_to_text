@@ -42,8 +42,7 @@
     Клонируйте репозиторий:
     bash
 
-git clone https://github.com/ваш-репозиторий/ocr-webapp.git
-cd ocr-webapp
+
 
 Установите зависимости Python:
 bash
